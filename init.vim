@@ -18,14 +18,21 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
 
-Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh' }
-Plug 'roxma/nvim-completion-manager'
-
 Plug 'alexlafroscia/postcss-syntax.vim'
 Plug 'Quramy/vim-js-pretty-template'
 Plug 'leafgarland/typescript-vim'
+Plug 'mattn/emmet-vim'
 
 Plug 'happenslol/csfind.vim'
+
+Plug 'fatih/vim-go'
+Plug 'digitaltoad/vim-pug'
+
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 call plug#end()
 
@@ -43,6 +50,8 @@ set relativenumber
 set numberwidth=4
 highlight LineNr guibg=black
 highlight LineNr ctermfg=black ctermbg=black
+
+set mouse=a
 
 " Enhance command-line completion
 set wildmenu
@@ -140,11 +149,12 @@ set hidden
 let g:LanguageClient_autoStart = 1
 let cquery_init = "--init={\"cacheDirectory\": \"/tmp/cquery\"}"
 let g:LanguageClient_serverCommands = {
-    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+    \ 'rust': ['rustup', 'run', 'stable', 'rls'],
     \ 'cpp': ['cquery', '--log-file=/tmp/cq.log', cquery_init],
     \ 'c': ['cquery', '--log-file=/tmp/cq.log', cquery_init],
     \ 'javascript': ['typescript-language-server', '--stdio'],
     \ 'typescript': ['typescript-language-server', '--stdio'],
+    \ 'go': ['go-langserver'],
     \ }
 " Don't display diagnostics
 let g:LanguageClient_diagnosticsEnable = 0
@@ -165,4 +175,13 @@ endfun
 map <leader>r :silent call RefreshAll()<CR>
 
 nnoremap <A-f> :CsfPrompt<CR>
+
+let g:go_fmt_command = "goimports"
+
+let g:user_emmet_leader_key='<C-l>'
+
+let g:deoplete#enable_at_startup = 1
+set completeopt-=preview
+
+com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
 
