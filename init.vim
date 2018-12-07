@@ -2,11 +2,10 @@ set rtp+=~/nvimfiles
 
 call plug#begin('~/nvimfiles/plugs')
 
+Plug 'sheerun/vim-polyglot'
 Plug 'scrooloose/nerdtree'
-Plug 'scrooloose/nerdcommenter'
-Plug 'sickill/vim-sunburst'
-Plug 'kristijanhusak/vim-hybrid-material'
-Plug 'tpope/vim-obsession'
+Plug 'tomtom/tcomment_vim'
+Plug 'dikiaap/minimalist'
 Plug 'tpope/vim-surround'
 Plug 'Raimondi/delimitMate'
 Plug 'vim-airline/vim-airline'
@@ -19,39 +18,38 @@ Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
 
 Plug 'alexlafroscia/postcss-syntax.vim'
-Plug 'Quramy/vim-js-pretty-template'
-Plug 'leafgarland/typescript-vim'
 Plug 'mattn/emmet-vim'
 
 Plug 'happenslol/csfind.vim'
+Plug 'w0rp/ale'
 
-Plug 'fatih/vim-go'
-Plug 'digitaltoad/vim-pug'
-
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+Plug 'ryanoasis/vim-devicons'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 
 call plug#end()
 
 " Colorscheme
 set background=dark
-colorscheme hybrid_reverse
+colorscheme minimalist
 
-let g:airline_theme = 'hybrid'
+let g:airline_theme = 'minimalist'
 let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline = 1
+let g:airline#extensions#ale#enabled = 1
 let g:Powerline_symbols = 'fancy'
 
 " Use relative line numbers
 set number
 set relativenumber
 set numberwidth=4
-highlight LineNr guibg=black
-highlight LineNr ctermfg=black ctermbg=black
+hi LineNr guibg=black
+hi LineNr ctermfg=black ctermbg=black
 
 set mouse=a
+
+set undofile
+set undodir=~/nvimfiles/undo//
+set directory=~/nvimfiles/swap//
 
 " Enhance command-line completion
 set wildmenu
@@ -99,6 +97,12 @@ set scrolloff=3
 
 " Map NERDTree to ctrl-n
 map <C-n> :NERDTreeToggle<CR>
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeHighlightCursorline = 0
+let g:NERDTreeSyntaxDisableDefaultExtensions = 1
+let g:NERDTreeDisableExactMatchHighlight = 1
+let g:NERDTreeDisablePatternMatchHighlight = 1
+let g:NERDTreeSyntaxEnabledExtensions = ['js', 'ts', 'css', 'scss', 'json', 'html', 'png', 'svg']
 
 " Map fzf bindings
 nnoremap <C-p> :Files<CR>
@@ -144,28 +148,6 @@ let g:fzf_buffers_jump = 1
 " Customize the options used by 'git log':
 let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
 
-" Required for operations modifying multiple buffers like rename.
-set hidden
-let g:LanguageClient_autoStart = 1
-let cquery_init = "--init={\"cacheDirectory\": \"/tmp/cquery\"}"
-let g:LanguageClient_serverCommands = {
-    \ 'rust': ['rustup', 'run', 'stable', 'rls'],
-    \ 'cpp': ['cquery', '--log-file=/tmp/cq.log', cquery_init],
-    \ 'c': ['cquery', '--log-file=/tmp/cq.log', cquery_init],
-    \ 'javascript': ['typescript-language-server', '--stdio'],
-    \ 'typescript': ['typescript-language-server', '--stdio'],
-    \ 'go': ['go-langserver'],
-    \ }
-" Don't display diagnostics
-let g:LanguageClient_diagnosticsEnable = 0
-
-nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
-
-let g:NERDSpaceDelims = 1
-let g:NERDCompactSexyComs = 1
-let g:NERDTrimTrailingWhitespace = 1
-
 fun! RefreshAll()
     set noconfirm
     bufdo e!
@@ -178,10 +160,15 @@ nnoremap <A-f> :CsfPrompt<CR>
 
 let g:go_fmt_command = "goimports"
 
-let g:user_emmet_leader_key='<C-l>'
-
-let g:deoplete#enable_at_startup = 1
+let g:user_emmet_leader_key = '<C-l>'
+let g:ale_completion_enabled = 1
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = '>'
+let g:ale_sign_warning = '-'
 set completeopt-=preview
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+nmap <silent> <leader>q :ALEHover<CR>
 
 com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
-
+hi clear SignColumn
